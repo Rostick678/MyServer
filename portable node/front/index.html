@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="products-list"></div>
+    <script>
+        const API = "http://localhost:7000/cart"
+        const productDiv = document.getElementById('products-list')
+
+        async function create(){
+            const formData = new FormData()
+            formData.append('name', document.getElementById('name').value)
+            formData.append('price', document.getElementById('price').value)
+
+            const response = await fetch(API, {method: 'POST', body: formData})
+            console.log(response);
+        }
+
+
+
+
+        async function load(){
+            const response = await fetch(API, {method: 'GET'})
+            const products = await response.json()
+
+            products.forEach(product => {
+             
+                const productName = document.createElement('h1')
+                const productPrice = document.createElement('p')
+                const delButton = document.createElement('button')
+
+                productName.textContent = product.name 
+                productPrice.textContent = product.price 
+
+                delButton.textContent = 'Удалить'
+                delButton.addEventListener('click', ()=> deleteProduct(product.id))
+               
+                productDiv.appendChild(productName)
+                productDiv.appendChild(productPrice)
+                productDiv.appendChild(delButton)
+               
+                
+            });
+        }
+        async function deleteProduct(id) {
+             const response = await fetch(`${API}/${id}`, { method: 'DELETE'})
+             if(response.ok){
+                alert('Товар был удалён')
+             }
+             loadCars()
+            }
+        load()
+    </script>
+</body>
+</html>
