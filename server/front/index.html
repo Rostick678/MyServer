@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    
+    <div id="app">
+        <h1>Корзина</h1>
+        <div id="input-section">
+            <input id="task-input" placeholder=" "/>
+            <input id="price-input" placeholder=" "/>
+            <button id="add-btn">Добавить</button>
+        </div>
+    <div id="products-list"></div>
+    <script>
+        const sd = 12345
+        const API = "http://localhost:7000/cart"
+        const productDiv = document.getElementById('products-list')
+        const postButton = document.getElementById('add-btn')
+        postButton.addEventListener('click', create)
+
+
+
+        
+        async function create(){
+        const nameInp = document.getElementById('task-input').value;
+        const price = document.getElementById('price-input').value
+            const response = await fetch(API, 
+            {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({name:nameInp, price})
+            })
+
+            load()
+        }
+
+
+
+
+        async function load(){
+            const response = await fetch(API, {method: 'GET'})
+            const products = await response.json()
+            console.log(products);
+            productDiv.innerHTML = ""
+            products.forEach(product => {
+             
+                const productName = document.createElement('h1')
+                const productPrice = document.createElement('p')
+                const delButton = document.createElement('button')
+                const updButton = document.createElement('button')
+
+                productName.textContent = product.name 
+                productPrice.textContent = product.price 
+
+                
+
+                delButton.textContent = 'Удалить'
+                delButton.addEventListener('click', ()=> deleteProduct(product.id))
+                updButton.textContent = 'Редактировать'
+                updButton.addEventListener('click', ()=> updateProduct(product.id))
+               
+                productDiv.appendChild(productName)
+                productDiv.appendChild(productPrice)
+                productDiv.appendChild(delButton)
+                productDiv.appendChild(updButton)
+               
+                
+            });
+        }
+        async function deleteProduct(id) {
+             const response = await fetch(`${API}/${id}`, { method: 'DELETE'})
+             if(response.ok){
+                alert('Товар был удалён')
+             }
+             load()
+            }
+
+            async function updateProduct(id){
+            const newName = prompt("Введите название")
+            const newPrice = prompt("Введите цену")
+
+            await fetch(`${API}/${id}`, {
+                    method:'PUT',
+                    body: JSON.stringify({name:newName, price:newPrice}),
+                    headers:{
+                    'Content-Type':'application/json'
+            }
+            })
+            load()
+            }
+        load()
+    </script>
+</body>
+</html>

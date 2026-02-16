@@ -2,7 +2,7 @@ const Router = require('express')
 const router = new Router()
 
 
-const cart = [{id: 1, name: "iPhone", price: 100000},{id: 1, name: "Android", price: 50000}]
+const cart = [{id: 1, name: "iPhone", price: 100000},{id: 2, name: "Android", price: 50000}]
 let newId = 3
 
 router.get('/',(req,res)=>{
@@ -27,6 +27,7 @@ router.delete('/:id',(req,res)=>{
     const {id} = req.params
     const candidate = cart.find(item => item.id === Number(id))
     cart.splice(id-1, 1)
+    console.log(candidate);
     return res.send(candidate)
     
 })
